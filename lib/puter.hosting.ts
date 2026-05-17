@@ -11,11 +11,11 @@ import {
 import { blob } from "stream/consumers";
 
 type HostingConfig = {
-  subdomain: String;
+  subdomain: string;
 };
 
 type HostingAssets = {
-  url: String;
+  url: string;
 };
 
 export const getOrCreateHostingConfig =
@@ -31,9 +31,13 @@ export const getOrCreateHostingConfig =
     try {
       const created = await puter.hosting.create(subdomain, ".");
 
-      return { subdomain: created.subdomain };
-    } catch (error) {
-      console.warn(`Could not Find Subdomains ${error}`);
+      const record = { subdomain: created.subdomain };
+
+      await puter.kv.set(HOSTING_CONFIG_KEY, record);
+
+      return record;
+    } catch (e) {
+      console.warn(`Could not find subdomain: ${e}`);
       return null;
     }
   };
