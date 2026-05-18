@@ -4,9 +4,9 @@ import {
   uploadImageToHosting,
 } from "./puter.hosting";
 import { isHostedUrl } from "./utils";
-import { console } from "inspector";
 
 export const signIn = async () => {
+  console.log("yup");
   await puter.auth.signIn();
 };
 

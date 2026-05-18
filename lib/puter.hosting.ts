@@ -8,7 +8,6 @@ import {
   imageUrlToPngBlob,
   isHostedUrl,
 } from "./utils";
-import { blob } from "stream/consumers";
 
 type HostingConfig = {
   subdomain: string;
