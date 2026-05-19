@@ -1,21 +1,117 @@
-import { useLocation } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router";
+import { generate3DView } from "../../lib/ai.action";
+import { Box, Download, RefreshCcw, Share2, X } from "lucide-react";
+import Button from "../../components/ui/Button";
 
 const Visualizer = () => {
+  const navigate = useNavigate();
   const location = useLocation();
-  const { initialImage, name } = location.state || {};
-  return (
-    <section>
-      <h1>{name || "Untitled Project"}</h1>
+  const { initialImage, initialRender, name } = location.state || {};
 
-      <div className="visualizer">
-        {initialImage && (
-          <div className="image-container">
-            <h2>Source Image</h2>
-            <img src={initialImage} alt="source" />
+  const hasInitialGenerated = useRef(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [currentImage, setCurrentImage] = useState<string | null>(
+    initialRender || null,
+  );
+
+  const handleBack = () => navigate("/");
+
+  const runGeneration = async () => {
+    if (!initialImage) return;
+    try {
+      setIsProcessing(true);
+      const result = await generate3DView({ sourceImage: initialImage });
+
+      if (result.renderedImage) {
+        setCurrentImage(result.renderedImage);
+        // update proj with rendered img
+      }
+    } catch (error) {
+      console.error("Generation failed", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!initialImage || hasInitialGenerated.current) return;
+    if (initialRender) {
+      setCurrentImage(initialRender);
+      hasInitialGenerated.current = true;
+      return;
+    }
+    hasInitialGenerated.current = true;
+    runGeneration();
+  }, [initialImage, initialRender]);
+
+  return (
+    <div className="visualizer">
+      <nav className="topbar">
+        <div className="brand">
+          <Box className="logo" />
+          <span className="name">Roomora</span>
+        </div>
+        <Button variant="ghost" size="sm" onClick={handleBack} className="exit">
+          <X className="icon" />
+          Exit Editor
+        </Button>
+      </nav>
+
+      <section className="content">
+        <div className="panel">
+          <div className="panel-header">
+            <div className="panel-meta">
+              <p>Projects</p>
+              <h2>{"Meow Meow"}</h2>
+              <p className="note">Created By You</p>
+            </div>
+            <div className="panel-actions">
+              <Button
+                variant="ghost"
+                onClick={() => {}}
+                size="sm"
+                disabled={!currentImage}
+                className="export"
+              >
+                <Download className="w-4 h-4 mr-2" />
+              </Button>
+              <Button size="sm" onClick={() => {}} className="share">
+                <Share2 className="w-4 h-4 mr-2" />
+              </Button>
+            </div>
           </div>
-        )}
-      </div>
-    </section>
+
+          <div className={`render-area ${isProcessing ? "is-processing" : ""}`}>
+            {currentImage ? (
+              <img src={currentImage} alt="AI Render" className="render-img" />
+            ) : (
+              <div className="render-placeholder">
+                {initialImage && (
+                  <img
+                    src={initialImage}
+                    alt="original"
+                    className="render-fallback"
+                  />
+                )}
+              </div>
+            )}
+
+            {isProcessing && (
+              <div className="render-overlay">
+                <div className="rendering-card">
+                  <RefreshCcw className="spinner" />
+                  <span className="title">Rendering...</span>
+                  <span className="subtitle">
+                    Generating your 3D visualization
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 export default Visualizer;
