@@ -9,14 +9,6 @@ import {
   isHostedUrl,
 } from "./utils";
 
-type HostingConfig = {
-  subdomain: string;
-};
-
-type HostingAssets = {
-  url: string;
-};
-
 export const getOrCreateHostingConfig =
   async (): Promise<HostingConfig | null> => {
     const existing = (await puter.kv.get(
@@ -30,7 +22,7 @@ export const getOrCreateHostingConfig =
     try {
       const created = await puter.hosting.create(subdomain, ".");
 
-      const record: HostingConfig = { subdomain: created.subdomain };
+      const record = { subdomain: created.subdomain };
 
       await puter.kv.set(HOSTING_CONFIG_KEY, record);
 
@@ -57,11 +49,12 @@ export const uploadImageToHosting = async ({
             blob ? { blob, contentType: "image/png" } : null,
           )
         : await fetchBlobFromUrl(url);
+
     if (!resolved) return null;
 
     const contentType = resolved.contentType || resolved.blob.type || "";
     const ext = getImageExtension(contentType, url);
-    const dir = `project/${projectId}`;
+    const dir = `projects/${projectId}`;
     const filePath = `${dir}/${label}.${ext}`;
 
     const uploadFile = new File([resolved.blob], `${label}.${ext}`, {
@@ -72,9 +65,10 @@ export const uploadImageToHosting = async ({
     await puter.fs.write(filePath, uploadFile);
 
     const hostedUrl = getHostedUrl({ subdomain: hosting.subdomain }, filePath);
+
     return hostedUrl ? { url: hostedUrl } : null;
-  } catch (error) {
-    console.warn(`Failed to store hosted image : ${error}`);
+  } catch (e) {
+    console.warn(`Failed to store hosted image: ${e}`);
     return null;
   }
 };
