@@ -106,6 +106,37 @@
     }
   }
 
+  .enterprise-section h2,
+  .enterprise-section h3 {
+    font-family: "Your-Serif-Font", Georgia, serif;
+  }
+
+  .enterprise-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 14px 28px;
+    font-size: 0.875rem;
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border: 1px solid #000000;
+    border-radius: 0px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  }
+
+  .enterprise-cta:hover {
+    background-color: #1a1a1a;
+  }
+
+  .capability-card h3 {
+    color: #111111;
+    font-weight: 500;
+  }
+
   .navbar {
     @apply fixed top-0 w-full z-50 bg-background/95 backdrop-blur-sm border-b border-foreground;
 

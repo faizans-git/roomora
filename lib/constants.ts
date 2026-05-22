@@ -21,6 +21,8 @@ export const GRID_COLOR = "#3B82F6";
 // HTTP Status Codes
 export const UNAUTHORIZED_STATUSES = [401, 403];
 
+export const luxuryEase = [0.16, 1, 0.3, 1] as const;
+
 // Image Dimensions
 export const IMAGE_RENDER_DIMENSION = 1024;
 

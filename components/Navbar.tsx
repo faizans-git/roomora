@@ -32,9 +32,8 @@ const Navbar = () => {
           </div>
 
           <ul className="links">
-            <a href="#projects">Products</a>
-            <a href="#">Pricing</a>
-            <a href="#">Community</a>
+            <a href="#projects">Projects</a>
+            <a href="#about">About</a>
             <a href="#">Enterprise</a>
           </ul>
         </div>
