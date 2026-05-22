@@ -6,6 +6,11 @@ import Upload from "../../components/Upload";
 import { useNavigate } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { createProject, getProjects } from "../../lib/puter.action";
+import { motion } from "framer-motion";
+import { luxuryEase } from "../../lib/constants";
+import About from "../../components/About";
+import Enterprise from "../../components/Enterprise";
+import Footer from "../../components/Footer";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,6 +18,29 @@ export function meta({}: Route.MetaArgs) {
     { name: "description", content: "Welcome to React Router!" },
   ];
 }
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 24 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 1.2,
+      ease: luxuryEase,
+    },
+  },
+};
 
 export default function Home() {
   const navigate = useNavigate();
@@ -63,7 +91,6 @@ export default function Home() {
   useEffect(() => {
     const fetchProjects = async () => {
       const items = await getProjects();
-
       setProjects(items);
     };
 
@@ -74,34 +101,70 @@ export default function Home() {
     <div className="home">
       <Navbar />
 
-      <section className="hero">
-        <div className="announce">
+      <motion.section
+        className="hero"
+        variants={containerVariants}
+        initial="hidden"
+        animate="show"
+      >
+        <motion.div variants={itemVariants} className="announce">
           <div className="dot">
             <div className="pulse"></div>
           </div>
-
           <p>Introducing Roomora 2.0</p>
+        </motion.div>
+
+        <div style={{ overflow: "hidden" }}>
+          <motion.h1 variants={itemVariants} style={{ originY: 1 }}>
+            Build beautiful spaces at the speed of thought with Roomify
+          </motion.h1>
         </div>
 
-        <h1>Build beautiful spaces at the speed of thought with Roomify</h1>
-
-        <p className="subtitle">
+        <motion.p variants={itemVariants} className="subtitle">
           Roomora is an AI-first design environment that helps you visualize,
           render, and ship architectural projects faster than ever.
-        </p>
+        </motion.p>
 
-        <div className="actions">
-          <a href="#upload" className="cta">
+        <motion.div variants={itemVariants} className="actions">
+          <motion.a
+            href="#upload"
+            className="cta"
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.4, ease: luxuryEase }}
+          >
             Start Building <ArrowRight className="icon" />
-          </a>
+          </motion.a>
 
-          <Button variant="outline" size="lg" className="demo">
-            Watch Demo
-          </Button>
-        </div>
+          <motion.div
+            whileHover={{ scale: 1.02, y: -2 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: 0.4, ease: luxuryEase }}
+          >
+            <Button variant="outline" size="lg" className="demo">
+              Watch Demo
+            </Button>
+          </motion.div>
+        </motion.div>
 
-        <div id="upload" className="upload-shell">
-          <div className="grid-overlay" />
+        <motion.div
+          id="upload"
+          className="upload-shell"
+          variants={{
+            hidden: { opacity: 0, y: 40 },
+            show: {
+              opacity: 1,
+              y: 0,
+              transition: { duration: 1.6, ease: luxuryEase, delay: 0.4 },
+            },
+          }}
+        >
+          <motion.div
+            className="grid-overlay"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.15 }}
+            transition={{ duration: 2, ease: "easeOut", delay: 0.6 }}
+          />
 
           <div className="upload-card">
             <div className="upload-head">
@@ -115,8 +178,8 @@ export default function Home() {
 
             <Upload onComplete={handleUploadComplete} />
           </div>
-        </div>
-      </section>
+        </motion.div>
+      </motion.section>
 
       <section className="projects" id="projects">
         <div className="section-inner">
@@ -133,10 +196,15 @@ export default function Home() {
           <div className="projects-grid">
             {projects.map(
               ({ id, name, renderedImage, sourceImage, timestamp }) => (
-                <div
+                <motion.div
                   key={id}
                   className="project-card group"
                   onClick={() => navigate(`/visualizer/${id}`)}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.8, ease: luxuryEase }}
+                  whileHover={{ y: -6 }}
                 >
                   <div className="preview">
                     <img src={renderedImage || sourceImage} alt="Project" />
@@ -155,16 +223,25 @@ export default function Home() {
                         <span>{new Date(timestamp).toLocaleDateString()}</span>
                       </div>
                     </div>
-                    <div className="arrow">
+                    <motion.div
+                      className="arrow"
+                      variants={{
+                        hover: { x: 2, y: -2 },
+                      }}
+                    >
                       <ArrowUpRight size={18} />
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
               ),
             )}
           </div>
         </div>
       </section>
+
+      <About />
+      <Enterprise />
+      <Footer />
     </div>
   );
 }
